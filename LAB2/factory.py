@@ -1,5 +1,6 @@
 from player import Player
 import xml.etree.ElementTree as ET
+from icecream import ic
 
 class PlayerFactory:
     def to_json(self, players):
@@ -10,7 +11,7 @@ class PlayerFactory:
             return {"nickname" : player.nickname,
                     "email" : player.email,
                     "date_of_birth" : player.date_of_birth.strftime("%Y-%m-%d"),
-                    "xp" : player.xp,
+                    "xp" : int(player.xp),
                     "class" : player.cls}
 
         return [player_to_json(p) for p in players]
@@ -23,7 +24,7 @@ class PlayerFactory:
             return Player(dct['nickname'],
                           dct['email'],
                           dct['date_of_birth'],
-                          dct['xp'],
+                          int(dct['xp']),
                           dct['class'])
 
         return [json_to_player(d) for d in list_of_dict]
@@ -32,13 +33,36 @@ class PlayerFactory:
         '''
             This function should transform a XML string into a list with Player objects.
         '''
-        pass
+        root = ET.fromstring(xml_string)
+        ls_of_dict = [{attr.tag: attr.text for attr in pl} for pl in root]
+
+        return self.from_json(ls_of_dict)
 
     def to_xml(self, list_of_players):
         '''
             This function should transform a list with Player objects into a XML string.
         '''
-        pass
+        root = ET.Element('data')
+        for p in list_of_players:
+            player = ET.SubElement(root, 'player')
+
+            nickname = ET.SubElement(player, 'nickname')
+            nickname.text = p.nickname
+
+            email = ET.SubElement(player, 'email')
+            email.text = p.email
+
+            date_of_birth = ET.SubElement(player, 'date_of_birth')
+            date_of_birth.text = p.date_of_birth.strftime("%Y-%m-%d")
+
+            xp = ET.SubElement(player, 'xp')
+            xp.text = str(p.xp)
+
+            cls = ET.SubElement(player, 'class')
+            cls.text = p.cls
+
+        s = ET.tostring(root, encoding='utf8')
+        return s
 
     def from_protobuf(self, binary):
         '''

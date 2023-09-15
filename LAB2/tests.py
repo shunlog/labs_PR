@@ -1,5 +1,3 @@
-#!/bin/env python3
-
 import unittest
 from player import Player
 from factory import PlayerFactory
