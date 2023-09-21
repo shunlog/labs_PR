@@ -1,6 +1,7 @@
 from player import Player
 import xml.etree.ElementTree as ET
 from icecream import ic
+from proto import player_pb2
 
 class PlayerFactory:
     def to_json(self, players):
@@ -68,11 +69,36 @@ class PlayerFactory:
         '''
             This function should transform a binary protobuf string into a list with Player objects.
         '''
-        pass
+        proto_ls = player_pb2.PlayersList()
+        proto_ls.ParseFromString(binary)
+
+        class_enum = {0: "Berserk",
+                      1: "Tank",
+                      3: "Paladin",
+                      4: "Mage"}
+
+        ls = []
+        for p in proto_ls.player:
+            player = Player(p.nickname,
+                            p.email,
+                            p.date_of_birth,
+                            p.xp,
+                            class_enum[p.cls])
+            ls.append(player)
+
+        return ls
+
 
     def to_protobuf(self, list_of_players):
         '''
             This function should transform a list with Player objects intoa binary protobuf string.
         '''
-        pass
+        proto_ls = player_pb2.PlayersList()
+        for p in list_of_players:
+            proto_ls.player.add(nickname = p.nickname,
+                          email = p.email,
+                          date_of_birth = p.date_of_birth.strftime("%Y-%m-%d"),
+                          xp = int(p.xp),
+                          cls = p.cls)
 
+        return proto_ls.SerializeToString()

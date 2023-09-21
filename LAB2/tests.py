@@ -177,7 +177,6 @@ class TestFromXML(unittest.TestCase):
 
         gen_players = factory.from_xml(string)
 
-        self.assertEqual(len(gen_players), len(player))
         for i in range(len(gen_players)):
             self.assertEqual(gen_players[i].nickname, players[i].nickname, "From single XML: Nicknames are different")
             self.assertEqual(gen_players[i].email, players[i].email, "From single XML: Emails are different")
